@@ -8,10 +8,16 @@
 
 #import "GC_view.h"
 
-@implementation GC_view
+@implementation GC_view {
+    double x,y;
+}
 
+/*
+ *
+ */
 - (id)initWithFrame:(CGRect)frame
 {
+    NSLog(@"GC_view initWithFrame");
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
@@ -19,13 +25,20 @@
     return self;
 }
 
-/*
+
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
     // Drawing code
+    NSLog(@"GC_view drawRect:(%f,%f)",rect.size.height,rect.size.width);
+    
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    UIGraphicsPushContext(ctx);
+    CGContextSetRGBFillColor(ctx, 0.2f, 0.2f, 1.0f, 1.0f);  // blue color
+    CGContextFillEllipseInRect(ctx, CGRectMake(0, 0, rect.size.height, rect.size.width));
+    UIGraphicsPopContext();
 }
-*/
+
 
 @end
