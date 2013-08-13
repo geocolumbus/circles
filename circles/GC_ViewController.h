@@ -10,4 +10,6 @@
 
 @interface GC_ViewController : UIViewController
 
+@property (weak,atomic) NSTimer *repeatingTimer;
+
 @end
