@@ -12,4 +12,10 @@
 
 @property (weak,atomic) NSTimer *repeatingTimer;
 
+typedef struct {
+    double x,y;
+    double vx,vy;
+    double r;
+} circType;
+
 @end

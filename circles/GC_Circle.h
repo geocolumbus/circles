@@ -1,13 +1,13 @@
 //
-//  GC_view.h
+//  GC_Circle.h
 //  circles
 //
-//  Created by George Campbell on 8/11/13.
+//  Created by George Campbell on 8/13/13.
 //  Copyright (c) 2013 george. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-@interface GC_view : UIView
+@interface GC_Circle : UIView
 
 @end

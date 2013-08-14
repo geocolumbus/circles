@@ -7,19 +7,18 @@
 //
 
 #import "GC_ViewController.h"
-#import "GC_view.h"
+#import "GC_Circle.h"
 
 @interface GC_ViewController ()
 
 @end
 
 @implementation GC_ViewController {
-    double posX, posY, sizeX, sizeY;
-    double boundaryX, boundaryY;
-    double incX, incY;
-    UIView *vw;
+    long width, height;
+    long size;
+    NSMutableArray *circles;
+    NSTimer *timer;
 }
-
 
 /*
  *
@@ -30,42 +29,121 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
-    NSLog(@"width: %f  height: %f",self.view.frame.size.width,self.view.frame.size.height);
+    width = self.view.frame.size.width;
+    height = self.view.frame.size.height;
     
-    posX = 50;
-    posY = 50;
-    sizeX = 100;
-    sizeY = 100;
+    size = 5;
+    circType c[size];
     
-    boundaryX = self.view.frame.size.width - 50;
-    boundaryY = self.view.frame.size.height - 50;
+    [self initData: c];
+    NSMutableArray *circles = [self setObjectsWithData: c];
+    [self print: c];
+    [self calculateMove: c];
     
-    incX = 1;
-    incY = 1;
-    
-    vw = [[GC_view alloc] initWithFrame:CGRectMake(0, 0, sizeX, sizeY)];
-    
-    vw.backgroundColor = [UIColor whiteColor];
-    
-    [self.view addSubview:vw];
-    [vw setNeedsDisplay];
-    
-    self.repeatingTimer = [NSTimer scheduledTimerWithTimeInterval: 0.001 target:self selector:@selector(animate) userInfo:nil repeats:YES];
-
+    timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(callBackWithData:andCircles:) withObject:c withObject: circles userInfo:nil repeats:YES];
 }
 
--(void) animate {
-    vw.center = CGPointMake(posX,posY);
-    posX += incX;
-    posY += incY;
+/*
+ *
+ */
+- (void)callBackWithData: (circType *)c andCircles: (NSArray *)circles {
+    [self move:c];
+    [self updateObjects:c];
+}
+
+/*
+ *
+ */
+- (void)updateObjects: (circType *)c {
+    for (int i=0; i<size; i++) {
+        circles[i].f
+    }
+}
+
+/*
+ *
+ */
+- (NSMutableArray *)setObjectsWithData: (circType *)c {
     
-    if (posX > boundaryX || posX < 50) {
-        incX = -incX;
+    NSMutableArray *circs = [NSMutableArray new];
+    
+    for (int i=0; i<size; i++) {
+        GC_Circle *circ = [[GC_Circle alloc] initWithFrame:CGRectMake(c[i].x, c[i].y, c[i].r, c[i].r)];
+        circ.backgroundColor = [UIColor whiteColor];
+        [circs addObject:circ];
+        [self.view addSubview:circ];
+    }
+    return circs;
+}
+
+/*
+ *
+ */
+- (void) print: (circType *)c {
+    for (int i=0; i<size; i++) {
+        NSLog(@"%f %f %f %f %f",c[i].x,c[i].y,c[i].vx,c[i].vy,c[i].r);
+    }
+}
+
+/*
+ *
+ */
+- (void)initData: (circType *)c {
+    
+    for (int i=0; i<size; i++) {
+        c[i].x = rand() % width;
+        c[i].y = rand() % height;
+        c[i].vx = 1;
+        c[i].vy = 1;
+        c[i].r = 20;
     }
     
-    if (posY > boundaryY || posY < 50) {
-        incY = -incY;
+}
+
+/*
+ *
+ */
+- (void)calculateMove: (circType *)c {
+    
+    for (int i=0; i<size; i++) {
+        for (int j=i; j<size; j++) {
+            if ( i!= j && [self intersect: c[i] with: c[j]]) {
+                [self collision: c[i] with: c[j]];
+            }
+        }
     }
+}
+
+/*
+ *
+ */
+- (BOOL)intersect: (circType)a with: (circType)b {
+    double d = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+    return d < a.r * b.r;
+}
+
+/*
+ *
+ */
+- (void)collision: (circType)a with: (circType)b {
+    if (a.r > 0) {
+        a.r = a.r - 0.01;
+    }
+    if (b.r > 0) {
+        b.r = b.r - 0.01;
+    }
+}
+
+/*
+ *
+ */
+- (void)move: (circType *)c {
+    
+    for (int i=0; i<size; i++) {
+        c[i].x = c[i].x + c[i].vx;
+        c[i].y = c[i].y + c[i].vy;
+    }
+    
 }
 
 /*
@@ -77,5 +155,6 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 
 @end

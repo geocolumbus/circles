@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E74CE8D917BB16E800E6938D /* GC_Circle.m in Sources */ = {isa = PBXBuildFile; fileRef = E74CE8D817BB16E800E6938D /* GC_Circle.m */; };
 		E7B4CC1517B7490000861E56 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B4CC1417B7490000861E56 /* UIKit.framework */; };
 		E7B4CC1717B7490000861E56 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B4CC1617B7490000861E56 /* Foundation.framework */; };
 		E7B4CC1917B7490000861E56 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B4CC1817B7490000861E56 /* CoreGraphics.framework */; };
@@ -24,7 +25,6 @@
 		E7B4CC3E17B7490100861E56 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B4CC1617B7490000861E56 /* Foundation.framework */; };
 		E7B4CC4617B7490100861E56 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7B4CC4417B7490100861E56 /* InfoPlist.strings */; };
 		E7B4CC4917B7490100861E56 /* circlesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7B4CC4817B7490100861E56 /* circlesTests.m */; };
-		E7B4CC5717B750D400861E56 /* GC_view.m in Sources */ = {isa = PBXBuildFile; fileRef = E7B4CC5617B750D400861E56 /* GC_view.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +38,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E74CE8D717BB16E800E6938D /* GC_Circle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GC_Circle.h; sourceTree = "<group>"; };
+		E74CE8D817BB16E800E6938D /* GC_Circle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GC_Circle.m; sourceTree = "<group>"; };
 		E7B4CC1117B7490000861E56 /* circles.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = circles.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B4CC1417B7490000861E56 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		E7B4CC1617B7490000861E56 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -61,8 +63,6 @@
 		E7B4CC4517B7490100861E56 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E7B4CC4717B7490100861E56 /* circlesTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = circlesTests.h; sourceTree = "<group>"; };
 		E7B4CC4817B7490100861E56 /* circlesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = circlesTests.m; sourceTree = "<group>"; };
-		E7B4CC5517B750D400861E56 /* GC_view.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GC_view.h; sourceTree = "<group>"; };
-		E7B4CC5617B750D400861E56 /* GC_view.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GC_view.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,8 +129,8 @@
 				E7B4CC3217B7490100861E56 /* GC_ViewController.h */,
 				E7B4CC3317B7490100861E56 /* GC_ViewController.m */,
 				E7B4CC1B17B7490000861E56 /* Supporting Files */,
-				E7B4CC5517B750D400861E56 /* GC_view.h */,
-				E7B4CC5617B750D400861E56 /* GC_view.m */,
+				E74CE8D717BB16E800E6938D /* GC_Circle.h */,
+				E74CE8D817BB16E800E6938D /* GC_Circle.m */,
 			);
 			path = circles;
 			sourceTree = "<group>";
@@ -283,7 +283,7 @@
 				E7B4CC2117B7490000861E56 /* main.m in Sources */,
 				E7B4CC2517B7490000861E56 /* GC_AppDelegate.m in Sources */,
 				E7B4CC3417B7490100861E56 /* GC_ViewController.m in Sources */,
-				E7B4CC5717B750D400861E56 /* GC_view.m in Sources */,
+				E74CE8D917BB16E800E6938D /* GC_Circle.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -474,6 +474,7 @@
 				E7B4CC4E17B7490100861E56 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E7B4CC4F17B7490100861E56 /* Build configuration list for PBXNativeTarget "circlesTests" */ = {
 			isa = XCConfigurationList;
@@ -482,6 +483,7 @@
 				E7B4CC5117B7490100861E56 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
