@@ -38,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5F4E369617BBEE0F0007DEB0 /* GC_Global.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GC_Global.h; sourceTree = "<group>"; };
 		E74CE8D717BB16E800E6938D /* GC_Circle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GC_Circle.h; sourceTree = "<group>"; };
 		E74CE8D817BB16E800E6938D /* GC_Circle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GC_Circle.m; sourceTree = "<group>"; };
 		E7B4CC1117B7490000861E56 /* circles.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = circles.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,6 +90,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5F4E369417BBEDAA0007DEB0 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				E7B4CC3217B7490100861E56 /* GC_ViewController.h */,
+				E7B4CC3317B7490100861E56 /* GC_ViewController.m */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
+		5F4E369517BBEDC00007DEB0 /* Global */ = {
+			isa = PBXGroup;
+			children = (
+				5F4E369617BBEE0F0007DEB0 /* GC_Global.h */,
+			);
+			name = Global;
+			sourceTree = "<group>";
+		};
+		5F4E369917BBEF0E0007DEB0 /* App Delegate */ = {
+			isa = PBXGroup;
+			children = (
+				E7B4CC2317B7490000861E56 /* GC_AppDelegate.h */,
+				E7B4CC2417B7490000861E56 /* GC_AppDelegate.m */,
+			);
+			name = "App Delegate";
+			sourceTree = "<group>";
+		};
 		E7B4CC0817B7490000861E56 = {
 			isa = PBXGroup;
 			children = (
@@ -122,12 +149,11 @@
 		E7B4CC1A17B7490000861E56 /* circles */ = {
 			isa = PBXGroup;
 			children = (
-				E7B4CC2317B7490000861E56 /* GC_AppDelegate.h */,
-				E7B4CC2417B7490000861E56 /* GC_AppDelegate.m */,
+				5F4E369917BBEF0E0007DEB0 /* App Delegate */,
+				5F4E369517BBEDC00007DEB0 /* Global */,
+				5F4E369417BBEDAA0007DEB0 /* View Controllers */,
 				E7B4CC2C17B7490100861E56 /* MainStoryboard_iPhone.storyboard */,
 				E7B4CC2F17B7490100861E56 /* MainStoryboard_iPad.storyboard */,
-				E7B4CC3217B7490100861E56 /* GC_ViewController.h */,
-				E7B4CC3317B7490100861E56 /* GC_ViewController.m */,
 				E7B4CC1B17B7490000861E56 /* Supporting Files */,
 				E74CE8D717BB16E800E6938D /* GC_Circle.h */,
 				E74CE8D817BB16E800E6938D /* GC_Circle.m */,
