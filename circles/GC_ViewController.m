@@ -9,7 +9,8 @@
 #import "GC_ViewController.h"
 #import "GC_Circle.h"
 
-#define SIZE 5
+#define SIZE 20
+#define TIME_INCREMENT 0.01
 
 @interface GC_ViewController ()
 
@@ -33,89 +34,68 @@
     
     width = self.view.frame.size.width;
     height = self.view.frame.size.height;
+    circles = [NSMutableArray new];
         
-    [self initData];
-    [self setObjectsWithData];
-    [self print];
-    [self calculateMove];
+    [self initializeUIViewDataArray];
+    [self initializeUIViewArray];
+    //[self printUIViewObjectData];
+    [self calculateNextMoveForUIViewData];
     
-    timer = [NSTimer scheduledTimerWithTimeInterval:.5 target:self selector:@selector(callBackWithData) userInfo:nil repeats:YES];
+    timer = [NSTimer scheduledTimerWithTimeInterval:TIME_INCREMENT target:self selector:@selector(executeNextMove) userInfo:nil repeats:YES];
 }
+
+#pragma mark - Initialize data
 
 /*
  *
  */
-- (void)callBackWithData {
-    [self move];
-    [self updateObjects];
-}
-
-/*
- *
- */
-- (void)updateObjects {
-    for (int i=0; i<SIZE; i++) {
-        double r = c[i].r;
-        [circles[i] setFrame:CGRectMake(c[i].x, c[i].y, r, r)];
-        [circles[i] setNeedsDisplay];
-    }
-}
-
-/*
- *
- */
-- (void)setObjectsWithData
+- (void)initializeUIViewArray
 {
     for (int i=0; i<SIZE; i++) {
-        GC_Circle *circ = [[GC_Circle alloc] initWithFrame:CGRectMake(c[i].x, c[i].y, c[i].r, c[i].r)];
-        circ.backgroundColor = [UIColor whiteColor];
-        [circles addObject:circ];
-        [self.view addSubview:circ];
+        [circles addObject:[[GC_Circle alloc] initWithFrame:CGRectMake(c[i].x, c[i].y, c[i].r, c[i].r)]];
+        [circles[i] setBackgroundColor:[UIColor clearColor]];
+        [self.view addSubview:circles[i]];
     }
 }
 
 /*
  *
  */
-- (void) print {
-    for (int i=0; i<SIZE; i++) {
-        NSLog(@"%f %f %f %f %f",c[i].x,c[i].y,c[i].vx,c[i].vy,c[i].r);
-    }
-}
-
-/*
- *
- */
-- (void)initData {
+- (void)initializeUIViewDataArray {
     
     for (int i=0; i<SIZE; i++) {
-        c[i].x = rand() % width;
-        c[i].y = rand() % height;
+        c[i].r = 20;
+        c[i].x = rand() % (width - (int)c[i].r);
+        c[i].y = rand() % (height - (int)c[i].r);
         c[i].vx = 1;
         c[i].vy = 1;
-        c[i].r = 20;
     }
-    
 }
+
+#pragma mark - Calculate next move
 
 /*
  *
  */
-- (void)calculateMove {
+- (void)calculateNextMoveForUIViewData {
     
     for (int i=0; i<SIZE; i++) {
         for (int j=i; j<SIZE; j++) {
-            if ( i!= j && [self intersect: c[i] with: c[j]]) {
-                [self collision: c[i] with: c[j]];
+            if ( i!= j && [self detectUIViewIntersection: c[i] with: c[j]]) {
+                [self adjustUIViewVelocityForCollision: c[i] with: c[j]];
             }
         }
+    }
+    
+    for (int i=0; i<SIZE; i++) {
+        
     }
 }
 
 /*
  *
  */
-- (BOOL)intersect: (circType)a with: (circType)b {
+- (BOOL)detectUIViewIntersection: (circType)a with: (circType)b {
     double d = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
     return d < a.r * b.r;
 }
@@ -123,7 +103,7 @@
 /*
  *
  */
-- (void)collision: (circType)a with: (circType)b {
+- (void)adjustUIViewVelocityForCollision: (circType)a with: (circType)b {
     if (a.r > 0) {
         a.r = a.r - 0.01;
     }
@@ -132,16 +112,47 @@
     }
 }
 
+#pragma mark - Move UIViews to next position
+
 /*
  *
  */
-- (void)move {
+- (void)executeNextMove {
+    [self incrementUIViewPosition];
+    [self redrawUIViewObjects];
+}
+
+/*
+ *
+ */
+- (void)incrementUIViewPosition {
     
     for (int i=0; i<SIZE; i++) {
         c[i].x = c[i].x + c[i].vx;
         c[i].y = c[i].y + c[i].vy;
     }
-    
+}
+
+/*
+ *
+ */
+- (void)redrawUIViewObjects {
+    for (int i=0; i<SIZE; i++) {
+        double r = c[i].r;
+        [circles[i] setFrame:CGRectMake(c[i].x, c[i].y, r, r)];
+        [circles[i] setNeedsDisplay];
+    }
+}
+
+#pragma mark - Utility functions
+
+/*
+ *
+ */
+- (void) printUIViewObjectData {
+    for (int i=0; i<SIZE; i++) {
+        NSLog(@"%f %f %f %f %f",c[i].x,c[i].y,c[i].vx,c[i].vy,c[i].r);
+    }
 }
 
 /*
