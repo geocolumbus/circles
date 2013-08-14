@@ -39,7 +39,7 @@
     [self print];
     [self calculateMove];
     
-    timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(callBackWithData) userInfo:nil repeats:YES];
+    timer = [NSTimer scheduledTimerWithTimeInterval:.5 target:self selector:@selector(callBackWithData) userInfo:nil repeats:YES];
 }
 
 /*
@@ -55,7 +55,9 @@
  */
 - (void)updateObjects {
     for (int i=0; i<SIZE; i++) {
-    
+        double r = c[i].r;
+        [circles[i] setFrame:CGRectMake(c[i].x, c[i].y, r, r)];
+        [circles[i] setNeedsDisplay];
     }
 }
 
