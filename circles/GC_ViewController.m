@@ -10,12 +10,13 @@
 #import "GC_Circle.h"
 #import "GC_Global.h"
 
-#define QUANTITY 100
-#define TIME_INCREMENT .001
+#define QUANTITY 200
+#define TIME_INCREMENT .001;
+#define CALCULATIONS_PER_SECOND 100;
 #define VELOCITY 0
-#define MAXSIZE .25
-#define ATTENUATION 0.999
-#define GRAVITY -.0005
+#define RADIUS 20
+#define ATTENUATION .99
+#define GRAVITY -10
 
 @interface GC_ViewController ()
 
@@ -26,6 +27,7 @@
     NSMutableArray *circles;
     NSTimer *timer;
     circType c[QUANTITY];
+    int lastCollision1, lastCollision2;
 }
 
 #pragma mark - Lifcycle Functions
@@ -40,8 +42,8 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)) {
-        width = self.view.frame.size.width;
-        height = self.view.frame.size.height;
+        width = self.view.frame.size.height;
+        height = self.view.frame.size.width;
     } else {
         width = self.view.frame.size.height;
         height = self.view.frame.size.width;
@@ -53,7 +55,8 @@
     [self initializeUIViewArray];
     //[self printUIViewObjectData];
     
-    timer = [NSTimer scheduledTimerWithTimeInterval:TIME_INCREMENT target:self selector:@selector(executeNextMove) userInfo:nil repeats:YES];
+    double timerDelay = 1.0 / CALCULATIONS_PER_SECOND;
+    timer = [NSTimer scheduledTimerWithTimeInterval:timerDelay target:self selector:@selector(executeNextMove) userInfo:nil repeats:YES];
 }
 
 /*
@@ -77,7 +80,7 @@
     double dx, dy, dr;
     
     for (int i=0; i<QUANTITY; i++) {
-        c[i].r = 5 + rand() % 650 /10.0 * MAXSIZE;
+        c[i].r = RADIUS;
         c[i].x = rand() % (width - (int)c[i].r) + c[i].r;
         c[i].y = rand() % (height - (int)c[i].r) + c[i].r;
         c[i].vx = ((rand() % 1000) / 1000.0 - .5)*VELOCITY;
@@ -93,6 +96,22 @@
             }
         }
     }
+    
+    lastCollision1 = -1;
+    lastCollision2 = -1;
+}
+
+- (void)swapDataCoordinates {
+    DLog(@"swapDataCoordinates");
+    
+    double temp;
+    
+    for (int i=0; i<QUANTITY; i++) {
+        temp = c[i].x;
+        c[i].x = c[i].y;
+        c[i].y = temp;
+    }
+
 }
 
 /*
@@ -124,14 +143,49 @@
             dx = c[i].x - c[j].x;
             dy = c[i].y - c[j].y;
             if (dx * dx + dy * dy < dr) {
-                [self adjustUIViewVelocityForCollision: &(c[i]) with: &(c[j])];
+                if (i!=lastCollision1 || j!=lastCollision2) {
+                    [self separateCircles: &(c[i]) with: &(c[j])];
+                    [self adjustUIViewVelocityForCollision: &(c[i]) with: &(c[j])];
+                    lastCollision1 = i;
+                    lastCollision2 = j;
+                }
             }
         }
     }
     
     for (int i=0; i<QUANTITY; i++) {
-        [self adjustUIViewVelocityForWallCollision: &(c[i])];
+        if ([self adjustUIViewVelocityForWallCollision: &(c[i])]) {
+            if (lastCollision1 == i) {
+                lastCollision1 = -1;
+            }
+            if (lastCollision2 == i) {
+                lastCollision2 = -1;
+            }
+        }
     }
+}
+
+/*
+ *
+ */
+- (void)separateCircles: (circType *)a with: (circType *)b {
+    double midpointx = (a->x + b->x) / 2.0;
+    double midpointy = (a->y + b->y) / 2.0;
+    
+    double d = sqrt((a->x - b->x) * (a->x - b->x) + (a->y - b->y) * (a->y - b->y));
+    if (d < 0.00000001) {
+        d = 0.00000001;
+    }
+    
+    double ax = midpointx + a->r * (a->x - b->x) / d;
+    double ay = midpointy + a->r * (a->y - b->y) / d;
+    double bx = midpointx + b->r * (b->x - a->x) / d;
+    double by = midpointy + b->r * (b->y - a->y) / d;
+    
+    a->x = ax;
+    a->y = ay;
+    b->x = bx;
+    b->y = by;
 }
 
 /*
@@ -140,45 +194,61 @@
 - (void)adjustUIViewVelocityForCollision: (circType *)a with: (circType *)b {
     //DLog(@"adjustUIViewVelocityForCollision:");
     
-    a->x -= a->vx;
-    a->y -= a->vy;
-    b->x -= b->vx;
-    b->y -= b->vy;
+    double mb = a->r * a->r;
+    double ma = b->r * b->r;
     
-    double denom = a->r*a->r + b->r*b->r;
+    double d = sqrt((a->x - b->x) * (a->x - b->x) + (a->y - b->y) * (a->y - b->y));
+    if (d < 0.00000001) {
+        d = 0.00000001;
+    }
     
-    double newVelX1 = (a->vx * (a->r*a->r - b->r*b->r) + (2 * b->r*b->r * b->vx)) / denom;
-    double newVelY1 = (a->vy * (a->r*a->r - b->r*b->r) + (2 * b->r*b->r * b->vy)) / denom;
-    double newVelX2 = (b->vx * (b->r*b->r - a->r*a->r) + (2 * a->r*a->r * a->vx)) / denom;
-    double newVelY2 = (b->vy * (b->r*b->r - a->r*a->r) + (2 * a->r*a->r * a->vy)) / denom;
+    double nx = (b->x - a->x) / d;
+    double ny = (b->y - a->y) / d;
+    double p = 2 * (a->vx * nx + a->vy * ny - b->vx * nx - b->vy * ny) / (ma + mb);
+    double new_aVx = a->vx - p * ma * nx;
+    double new_aVy = a->vy - p * ma * ny;
+    double new_bVx = b->vx + p * mb * nx;
+    double new_bVy = b->vy + p * mb * ny;
     
-    a->vx = newVelX1;
-    a->vy = newVelY1;
-    b->vx = newVelX2;
-    b->vy = newVelY2;
+    a->vx = new_aVx;
+    a->vy = new_aVy;
+    b->vx = new_bVx;
+    b->vy = new_bVy;
 }
 
 /*
  *
  */
-- (void)adjustUIViewVelocityForWallCollision: (circType *)a {
-    //Dlog(@"adjustUIViewVelocityForCollision:");
+- (BOOL)adjustUIViewVelocityForWallCollision: (circType *)a {
+    //Dlog(@"adjustUIViewVelocityForWallCollision:");
+    
+    BOOL ret = NO;
+    
     if (a->x < a->r) {
         a->x = a->r;
         a->vx = -a->vx;
+        ret = YES;
     }
+    
     if (a->x > width - a->r) {
         a->x = width - a->r;
         a->vx = -a->vx;
+        ret = YES;
     }
+    
     if (a->y < a->r) {
         a->y = a->r;
         a->vy = -a->vy;
+        ret = YES;
     }
+    
     if (a->y > height - a->r) {
         a->y = height - a->r;
         a->vy = -a->vy;
+        ret = YES;
     }
+    
+    return ret;
 }
 
 #pragma mark - Move UIViews to next position
@@ -201,8 +271,8 @@
     //DLog(@"incrementUIViewPosition");
     
     for (int i=0; i<QUANTITY; i++) {
-        c[i].x = c[i].x + c[i].vx;
-        c[i].y = c[i].y + c[i].vy;
+        c[i].x = c[i].x + c[i].vx * TIME_INCREMENT;
+        c[i].y = c[i].y + c[i].vy * TIME_INCREMENT;
         c[i].vx *= ATTENUATION;
         c[i].vy *= ATTENUATION;
         c[i].vy -= GRAVITY;
@@ -227,12 +297,34 @@
 /*
  *
  */
-- (void) printUIViewObjectData {
+- (void)printUIViewObjectData {
     DLog(@"printUIViewObjectData");
     
     for (int i=0; i<QUANTITY; i++) {
         NSLog(@"%f %f %f %f %f",c[i].x,c[i].y,c[i].vx,c[i].vy,c[i].r);
     }
+}
+
+/*
+ *
+ */
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    DLog(@"willRotateToInterfaceOrientation:");
+   
+    switch (toInterfaceOrientation) {
+        case UIInterfaceOrientationPortrait:
+        case UIInterfaceOrientationPortraitUpsideDown:
+            width = self.view.frame.size.width+20;
+            height = self.view.frame.size.height-20;
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+        case UIInterfaceOrientationLandscapeRight:
+            width = self.view.frame.size.height+20;
+            height = self.view.frame.size.width-20;
+            break;
+    }
+    
+    [self swapDataCoordinates];
 }
 
 @end
