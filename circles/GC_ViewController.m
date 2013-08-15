@@ -10,12 +10,12 @@
 #import "GC_Circle.h"
 #import "GC_Global.h"
 
-#define QUANTITY 200
-#define TIME_INCREMENT .001;
-#define CALCULATIONS_PER_SECOND 100;
-#define VELOCITY 0
-#define RADIUS 20
-#define ATTENUATION .99
+#define QUANTITY 50
+#define TIME_INCREMENT .01;
+#define CALCULATIONS_PER_SECOND 48;
+#define VELOCITY 10
+#define RADIUS 10
+#define ATTENUATION .9
 #define GRAVITY -10
 
 @interface GC_ViewController ()
@@ -83,8 +83,8 @@
         c[i].r = RADIUS;
         c[i].x = rand() % (width - (int)c[i].r) + c[i].r;
         c[i].y = rand() % (height - (int)c[i].r) + c[i].r;
-        c[i].vx = ((rand() % 1000) / 1000.0 - .5)*VELOCITY;
-        c[i].vy = ((rand() % 1000) / 1000.0 - .5)*VELOCITY;
+        c[i].vx = ((rand() % 1000) / 1000.0 - .5) * VELOCITY / TIME_INCREMENT;
+        c[i].vy = ((rand() % 1000) / 1000.0 - .5) * VELOCITY / TIME_INCREMENT;
         
         for (int j=0; j<i; j++) {
             dr = (c[i].r + c[j].r)*(c[i].r + c[j].r);
@@ -210,10 +210,10 @@
     double new_bVx = b->vx + p * mb * nx;
     double new_bVy = b->vy + p * mb * ny;
     
-    a->vx = new_aVx;
-    a->vy = new_aVy;
-    b->vx = new_bVx;
-    b->vy = new_bVy;
+    a->vx = new_aVx * ATTENUATION;
+    a->vy = new_aVy * ATTENUATION;
+    b->vx = new_bVx * ATTENUATION;
+    b->vy = new_bVy * ATTENUATION;
 }
 
 /*
@@ -273,8 +273,6 @@
     for (int i=0; i<QUANTITY; i++) {
         c[i].x = c[i].x + c[i].vx * TIME_INCREMENT;
         c[i].y = c[i].y + c[i].vy * TIME_INCREMENT;
-        c[i].vx *= ATTENUATION;
-        c[i].vy *= ATTENUATION;
         c[i].vy -= GRAVITY;
     }
 }
