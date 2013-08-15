@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5FBA787417BD731700524F19 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FBA787317BD731700524F19 /* CoreMotion.framework */; };
 		E74CE8D917BB16E800E6938D /* GC_Circle.m in Sources */ = {isa = PBXBuildFile; fileRef = E74CE8D817BB16E800E6938D /* GC_Circle.m */; };
 		E7B4CC1517B7490000861E56 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B4CC1417B7490000861E56 /* UIKit.framework */; };
 		E7B4CC1717B7490000861E56 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B4CC1617B7490000861E56 /* Foundation.framework */; };
@@ -39,6 +40,7 @@
 
 /* Begin PBXFileReference section */
 		5F4E369617BBEE0F0007DEB0 /* GC_Global.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GC_Global.h; sourceTree = "<group>"; };
+		5FBA787317BD731700524F19 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		E74CE8D717BB16E800E6938D /* GC_Circle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GC_Circle.h; sourceTree = "<group>"; };
 		E74CE8D817BB16E800E6938D /* GC_Circle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GC_Circle.m; sourceTree = "<group>"; };
 		E7B4CC1117B7490000861E56 /* circles.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = circles.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,6 +73,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5FBA787417BD731700524F19 /* CoreMotion.framework in Frameworks */,
 				E7B4CC1517B7490000861E56 /* UIKit.framework in Frameworks */,
 				E7B4CC1717B7490000861E56 /* Foundation.framework in Frameworks */,
 				E7B4CC1917B7490000861E56 /* CoreGraphics.framework in Frameworks */,
@@ -128,6 +131,7 @@
 		E7B4CC0817B7490000861E56 = {
 			isa = PBXGroup;
 			children = (
+				5FBA787317BD731700524F19 /* CoreMotion.framework */,
 				E7B4CC1A17B7490000861E56 /* circles */,
 				E7B4CC4117B7490100861E56 /* circlesTests */,
 				E7B4CC1317B7490000861E56 /* Frameworks */,

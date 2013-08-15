@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 george. All rights reserved.
 //
 
+#import <CoreMotion/CoreMotion.h>
 #import "GC_ViewController.h"
 #import "GC_Circle.h"
 #import "GC_Global.h"
@@ -13,10 +14,10 @@
 #define QUANTITY 50
 #define TIME_INCREMENT .01;
 #define CALCULATIONS_PER_SECOND 48;
-#define VELOCITY 10
+#define VELOCITY 0
 #define RADIUS 10
 #define ATTENUATION .9
-#define GRAVITY -10
+#define GRAVITY -40
 
 @interface GC_ViewController ()
 
@@ -41,19 +42,22 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
+    self.manager = [[CMMotionManager alloc] init];
+    self.manager.deviceMotionUpdateInterval = 0.05; // 20 Hz
+    [self.manager startDeviceMotionUpdates];
+    
     if (UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation)) {
         width = self.view.frame.size.height;
         height = self.view.frame.size.width;
     } else {
-        width = self.view.frame.size.height;
-        height = self.view.frame.size.width;
+        width = self.view.frame.size.width;
+        height = self.view.frame.size.height;
     }
     
     circles = [NSMutableArray new];
     
     [self initializeUIViewDataArray];
     [self initializeUIViewArray];
-    //[self printUIViewObjectData];
     
     double timerDelay = 1.0 / CALCULATIONS_PER_SECOND;
     timer = [NSTimer scheduledTimerWithTimeInterval:timerDelay target:self selector:@selector(executeNextMove) userInfo:nil repeats:YES];
@@ -226,25 +230,25 @@
     
     if (a->x < a->r) {
         a->x = a->r;
-        a->vx = -a->vx;
+        a->vx = abs(a->vx);
         ret = YES;
     }
     
     if (a->x > width - a->r) {
         a->x = width - a->r;
-        a->vx = -a->vx;
+        a->vx = -abs(a->vx);
         ret = YES;
     }
     
     if (a->y < a->r) {
         a->y = a->r;
-        a->vy = -a->vy;
+        a->vy = abs(a->vy);
         ret = YES;
     }
     
     if (a->y > height - a->r) {
         a->y = height - a->r;
-        a->vy = -a->vy;
+        a->vy = -abs(a->vy);
         ret = YES;
     }
     
@@ -270,10 +274,22 @@
 - (void)incrementUIViewPosition {
     //DLog(@"incrementUIViewPosition");
     
+    double pitch = self.manager.deviceMotion.attitude.pitch;
+    double roll = self.manager.deviceMotion.attitude.roll;
+    
+    double ax = cos(pitch) * GRAVITY;
+    
+    if (signbit(roll)) {
+        ax = -ax;
+    }
+    
+    double ay = sin(pitch) * GRAVITY;
+    
     for (int i=0; i<QUANTITY; i++) {
         c[i].x = c[i].x + c[i].vx * TIME_INCREMENT;
         c[i].y = c[i].y + c[i].vy * TIME_INCREMENT;
-        c[i].vy -= GRAVITY;
+        c[i].vx -= ax;
+        c[i].vy -= ay;
     }
 }
 
@@ -302,27 +318,4 @@
         NSLog(@"%f %f %f %f %f",c[i].x,c[i].y,c[i].vx,c[i].vy,c[i].r);
     }
 }
-
-/*
- *
- */
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    DLog(@"willRotateToInterfaceOrientation:");
-   
-    switch (toInterfaceOrientation) {
-        case UIInterfaceOrientationPortrait:
-        case UIInterfaceOrientationPortraitUpsideDown:
-            width = self.view.frame.size.width+20;
-            height = self.view.frame.size.height-20;
-            break;
-        case UIInterfaceOrientationLandscapeLeft:
-        case UIInterfaceOrientationLandscapeRight:
-            width = self.view.frame.size.height+20;
-            height = self.view.frame.size.width-20;
-            break;
-    }
-    
-    [self swapDataCoordinates];
-}
-
 @end
