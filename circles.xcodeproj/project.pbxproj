@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5FBA787417BD731700524F19 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FBA787317BD731700524F19 /* CoreMotion.framework */; };
 		E74CE8D917BB16E800E6938D /* GC_Circle.m in Sources */ = {isa = PBXBuildFile; fileRef = E74CE8D817BB16E800E6938D /* GC_Circle.m */; };
+		E769ADD017BDA16800D2A55A /* GC_Model.m in Sources */ = {isa = PBXBuildFile; fileRef = E769ADCF17BDA16800D2A55A /* GC_Model.m */; };
 		E7B4CC1517B7490000861E56 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B4CC1417B7490000861E56 /* UIKit.framework */; };
 		E7B4CC1717B7490000861E56 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B4CC1617B7490000861E56 /* Foundation.framework */; };
 		E7B4CC1917B7490000861E56 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B4CC1817B7490000861E56 /* CoreGraphics.framework */; };
@@ -43,6 +44,8 @@
 		5FBA787317BD731700524F19 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		E74CE8D717BB16E800E6938D /* GC_Circle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GC_Circle.h; sourceTree = "<group>"; };
 		E74CE8D817BB16E800E6938D /* GC_Circle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GC_Circle.m; sourceTree = "<group>"; };
+		E769ADCE17BDA16800D2A55A /* GC_Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GC_Model.h; sourceTree = "<group>"; };
+		E769ADCF17BDA16800D2A55A /* GC_Model.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GC_Model.m; sourceTree = "<group>"; };
 		E7B4CC1117B7490000861E56 /* circles.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = circles.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B4CC1417B7490000861E56 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		E7B4CC1617B7490000861E56 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -119,13 +122,22 @@
 			name = "App Delegate";
 			sourceTree = "<group>";
 		};
-		E74CE8DA17BC565700E6938D /* Objects */ = {
+		E74CE8DA17BC565700E6938D /* UIView Objects */ = {
 			isa = PBXGroup;
 			children = (
 				E74CE8D717BB16E800E6938D /* GC_Circle.h */,
 				E74CE8D817BB16E800E6938D /* GC_Circle.m */,
 			);
-			name = Objects;
+			name = "UIView Objects";
+			sourceTree = "<group>";
+		};
+		E769ADD117BDA17300D2A55A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E769ADCE17BDA16800D2A55A /* GC_Model.h */,
+				E769ADCF17BDA16800D2A55A /* GC_Model.m */,
+			);
+			name = Models;
 			sourceTree = "<group>";
 		};
 		E7B4CC0817B7490000861E56 = {
@@ -162,7 +174,8 @@
 		E7B4CC1A17B7490000861E56 /* circles */ = {
 			isa = PBXGroup;
 			children = (
-				E74CE8DA17BC565700E6938D /* Objects */,
+				E769ADD117BDA17300D2A55A /* Models */,
+				E74CE8DA17BC565700E6938D /* UIView Objects */,
 				5F4E369917BBEF0E0007DEB0 /* App Delegate */,
 				5F4E369517BBEDC00007DEB0 /* Global */,
 				5F4E369417BBEDAA0007DEB0 /* View Controllers */,
@@ -322,6 +335,7 @@
 				E7B4CC2517B7490000861E56 /* GC_AppDelegate.m in Sources */,
 				E7B4CC3417B7490100861E56 /* GC_ViewController.m in Sources */,
 				E74CE8D917BB16E800E6938D /* GC_Circle.m in Sources */,
+				E769ADD017BDA16800D2A55A /* GC_Model.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

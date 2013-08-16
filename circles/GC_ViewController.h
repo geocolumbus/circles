@@ -8,16 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface GC_ViewController : UIViewController <UIAccelerometerDelegate>
+@class GC_Model;
+
+@interface GC_ViewController : UIViewController /*<UIAccelerometerDelegate>*/
 
 @property (weak,atomic) NSTimer *repeatingTimer;
-
-typedef struct {
-    double x,y;
-    double vx,vy;
-    double r;
-} circType;
-
-@property (strong,nonatomic) CMMotionManager *manager;
+@property (strong,atomic) GC_Model *model;
 
 @end
