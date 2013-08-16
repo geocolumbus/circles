@@ -62,10 +62,10 @@
         c[i].vx = ((rand() % 1000) / 1000.0 - .5) * VELOCITY / TIME_INCREMENT;
         c[i].vy = ((rand() % 1000) / 1000.0 - .5) * VELOCITY / TIME_INCREMENT;
         
-        // Each circle hashes into one slot. We only have to check the 9 slots surrounding this circle's slot
+        // Each circle hashes into one slot. We only have to check the 8 slots surrounding this circle's slot
         // when we do collision detection
-        c[i].hashX = round(c[i].x/c[i].r);
-        c[i].hashY = round(c[i].y/c[i].r);
+        c[i].hashX = (int)round(c[i].x/c[i].r);
+        c[i].hashY = (int)round(c[i].y/c[i].r);
         ch[c[i].hashX][c[i].hashY] = i;
         
         // Reject any circle that overlaps an already existing circle
@@ -117,80 +117,72 @@
     //DLog(@"calculateCollisions");
     
     double dx,dy,rsum;
-    circType nb[9];
+    circType nb[8];
+    bool flag[8];
     int hx, hy;
+    int hashIndex;
     
     // Test for, and handle, circle collisions
     for (int i=0; i<QUANTITY; i++) {
         hx = c[i].hashX;
         hy = c[i].hashY;
+        flag[0]=NO;
+        flag[1]=NO;
+        flag[2]=NO;
+        flag[3]=NO;
+        flag[4]=NO;
+        flag[5]=NO;
+        flag[6]=NO;
+        flag[7]=NO;
+        
         if (i != lastCollision1) {
-            nb[0] = c[ch[hx-1][hy-1]];
-            nb[1] = c[ch[hx+0][hy-1]];
-            nb[2] = c[ch[hx+1][hy-1]];
+            if (hy != 0) {
+                if (hx != 0) {
+                    nb[0] = c[ch[hx-1][hy-1]];
+                    flag[0] = YES;
+                }
+                nb[1] = c[ch[hx+0][hy-1]];
+                flag[1] = YES;
+                nb[2] = c[ch[hx+1][hy-1]];
+                flag[2] = YES;
+            }
             
-            nb[3] = c[ch[hx-1][hy+0]];
-            nb[4] = c[ch[hx+0][hy+0]];
-            nb[5] = c[ch[hx+1][hy+0]];
+            if (hx != 0) {
+                nb[3] = c[ch[hx-1][hy+0]];
+                flag[3] = YES;
+            }
             
-            nb[6] = c[ch[hx-1][hy+1]];
-            nb[7] = c[ch[hx+0][hy+1]];
-            nb[8] = c[ch[hx+1][hy+1]];
+            nb[4] = c[ch[hx+1][hy+0]];
+            flag[4] = YES;
             
-            for (int j=0; j<9; j++) {
-                int hashIndex = ch[nb[j].hashX][nb[j].hashY];
-                NSLog(@"hashIndex = %d",hashIndex);
-                
-                if (hashIndex > -1 && hashIndex != lastCollision2) {
-                
-                    dx = c[i].x - c[hashIndex].x;
-                    if (dx > RADIUS_BOUNDS) {
-                        continue;
-                    }
-                    dy = c[i].y - c[hashIndex].y;
-                    if (dy > RADIUS_BOUNDS) {
-                        continue;
-                    }
-                    rsum = c[i].r + c[hashIndex].r;
-                    if (dx * dx + dy * dy < rsum * rsum) {
-                        [self separateCircles: i with: hashIndex];
-                        [self adjustUIViewVelocityForCollision: i with: hashIndex];
-                        lastCollision1 = i;
-                        lastCollision2 = hashIndex;
-                    }
-
+            if (hx != 0) {
+                nb[5] = c[ch[hx-1][hy+1]];
+                flag[5] = YES;
+            }
+            nb[6] = c[ch[hx+0][hy+1]];
+            flag[6] = YES;
+            nb[7] = c[ch[hx+1][hy+1]];
+            flag[7] = YES;
+            
+            for (int j=0; j<8; j++)
+                if (flag[j]) {
+                    hashIndex = ch[nb[j].hashX][nb[j].hashY];
                     
-                }
-            }
-        }
-    }
-    
-/*
-    // Test for, and handle, circle collisions
-    for (int i=0; i<QUANTITY; i++) {
-        if (i != lastCollision1) {
-            for (int j=i+1; j<QUANTITY; j++) {
-                if (j != lastCollision2) {
-                    dx = c[i].x - c[j].x;
-                    if (dx > RADIUS_BOUNDS) {
-                        continue;
-                    }
-                    dy = c[i].y - c[j].y;
-                    if (dy > RADIUS_BOUNDS) {
-                        continue;
-                    }
-                    rsum = c[i].r + c[j].r;
-                    if (dx * dx + dy * dy < rsum * rsum) {
-                        [self separateCircles: i with: j];
-                        [self adjustUIViewVelocityForCollision: &(c[i]) with: &(c[j])];
-                        lastCollision1 = i;
-                        lastCollision2 = j;
+                    if (hashIndex != -1 && hashIndex != lastCollision2) {
+                        
+                        dx = c[i].x - c[hashIndex].x;
+                        dy = c[i].y - c[hashIndex].y;
+                        rsum = c[i].r + c[hashIndex].r;
+                        if (dx * dx + dy * dy < rsum * rsum) {
+                            [self separateCircles: i with: hashIndex];
+                            [self adjustUIViewVelocityForCollision: i with: hashIndex];
+                            lastCollision1 = i;
+                            lastCollision2 = hashIndex;
+                        }
                     }
                 }
-            }
         }
     }
- */
     
     // Test for, and handle, wall collisions
     for (int i=0; i<QUANTITY; i++) {
@@ -232,12 +224,25 @@
         ch[c[i].hashX][c[i].hashY] = -1;
         
         c[i].x = c[i].x + c[i].vx * TIME_INCREMENT;
+        if (c[i].x < 0) {
+            c[i].x = 0;
+        }
+        
         c[i].y = c[i].y + c[i].vy * TIME_INCREMENT;
+        if (c[i].y < 0) {
+            c[i].y = 0;
+        }
         
         c[i].hashX = round(c[i].x/c[i].r);
         c[i].hashY = round(c[i].y/c[i].r);
-        ch[c[i].hashX][c[i].hashY] = i;
         
+        if (c[i].hashX > HASH_SIZE-1) {
+            c[i].hashX = HASH_SIZE-1;
+        }
+        if (c[i].hashY > HASH_SIZE-1) {
+            c[i].hashY = HASH_SIZE-1;
+        }
+        ch[c[i].hashX][c[i].hashY] = i;
     }
 }
 
@@ -245,9 +250,6 @@
  * Once a circle collision is detected, move the two circles apart so they are not overlapping
  */
 - (void)separateCircles: (int)i with: (int)j {
-    
-    //double midpointx = (a->x + b->x) / 2.0;
-    //double midpointy = (a->y + b->y) / 2.0;
     
     circType *a = &c[i];
     circType *b = &c[j];
@@ -259,6 +261,9 @@
     double midpointy = (a->y * rb + b->y * ra) / (ra + rb);
     
     double d = sqrt((a->x - b->x) * (a->x - b->x) + (a->y - b->y) * (a->y - b->y));
+    if (d ==0) {
+        d=0.01;
+    }
     
     double ax = midpointx + ra * (a->x - b->x) / d;
     double ay = midpointy + ra * (a->y - b->y) / d;
@@ -269,20 +274,29 @@
     
     a->x = ax;
     a->hashX = round(a->x / a->r);
-    
+    if (a->hashX > HASH_SIZE-1) {
+        a->hashX = HASH_SIZE-1;
+    }
     a->y = ay;
     a->hashY = round(a->y / a->r);
+    if (a->hashY > HASH_SIZE-1) {
+        a->hashY = HASH_SIZE-1;
+    }
+    
     
     ch[a->hashX][a->hashY] = i;
     
     ch[b->hashX][b->hashY] = -1;
-    
     b->x = bx;
-    b->hashY = round(b->x / b->r);
-    
+    b->hashX = round(b->x / b->r);
+    if (b->hashX > HASH_SIZE-1) {
+        b->hashX = HASH_SIZE-1;
+    }
     b->y = by;
     b->hashY = round(b->y / b->r);
-    
+    if (b->hashY > HASH_SIZE-1) {
+        b->hashY = HASH_SIZE-1;
+    }
     ch[b->hashX][b->hashY] = j;
     
 }
@@ -300,6 +314,9 @@
     double ma = b->r * b->r;
     
     double d = sqrt((a->x - b->x) * (a->x - b->x) + (a->y - b->y) * (a->y - b->y));
+    if (d == 0) {
+        d = 0.01;
+    }
     
     double nx = (b->x - a->x) / d;
     double ny = (b->y - a->y) / d;
@@ -309,18 +326,10 @@
     double new_bVx = b->vx + p * mb * nx;
     double new_bVy = b->vy + p * mb * ny;
     
-    /*
-     a->vx = new_aVx * ball_attenuation;
-     a->vy = new_aVy * ball_attenuation;
-     b->vx = new_bVx * ball_attenuation;
-     b->vy = new_bVy * ball_attenuation;
-     */
-    
     a->vx = new_aVx * BALL_ATTENUATION;
     a->vy = new_aVy * BALL_ATTENUATION;
     b->vx = new_bVx * BALL_ATTENUATION;
     b->vy = new_bVy * BALL_ATTENUATION;
-    
 }
 
 /*
@@ -332,13 +341,13 @@
     // You have to check all four walls, because if a ball is in a corner and you return after checking
     // just one wall, the ball will act erratically
     BOOL ret = NO;
-    /*
-     if (a->x < a->r) {
-     a->x = a->r;
-     a->vx = abs(a->vx) * WALL_ATTENUATION;
-     ret = YES;
-     }
-     */
+    
+    if (a->x < a->r) {
+        a->x = a->r;
+        a->vx = abs(a->vx) * WALL_ATTENUATION;
+        ret = YES;
+    }
+    
     if (a->x > width - a->r) {
         a->x = width - a->r;
         a->vx = -abs(a->vx) * WALL_ATTENUATION;

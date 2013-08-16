@@ -18,19 +18,15 @@
 #define ILog( s, ... ) NSLog( @"<%p %@:(%d)>\n%@\n\n", self, [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat:(s), ##__VA_ARGS__] )
 
 
-#define QUANTITY 100
-#define CALCULATIONS_PER_SECOND 48
-#define TIME_INCREMENT .00025
-#define VELOCITY 0
-#define RADIUS_MAX 10
-#define RADIUS_MIN 10
-#define RADIUS_BOUNDS 18
-#define BALL_ATTENUATION .9
-//#define BALL_ATTENUATION1 .9
-//#define BALL_ATTENUATION2 .9
-//#define BALL_ATTENUATION_SWITCH 300
-#define WALL_ATTENUATION 0.9
-#define GRAVITY -60
+#define QUANTITY 2000
+#define CALCULATIONS_PER_SECOND 30
+#define TIME_INCREMENT .001
+#define VELOCITY 10
+#define RADIUS_MAX 5
+#define RADIUS_MIN 5
+#define BALL_ATTENUATION 0.9
+#define WALL_ATTENUATION 0.99
+#define GRAVITY -20
 #define HASH_SIZE 200
 
 
