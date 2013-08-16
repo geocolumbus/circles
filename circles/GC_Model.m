@@ -13,6 +13,8 @@
     long width, height;
     circType c[QUANTITY];
     int lastCollision1, lastCollision2;
+    double ball_attenuation;
+    long counter;
 }
 
 /*
@@ -23,6 +25,8 @@
     
     width = viewWidth;
     height = viewHeight;
+    counter = 0;
+    ball_attenuation = BALL_ATTENUATION1;
     
     self.manager = [[CMMotionManager alloc] init];
     self.manager.deviceMotionUpdateInterval = 0.05; // 20 Hz
@@ -31,6 +35,13 @@
     double dx, dy, dr;
     
     // Randomly create circles
+    
+     c[0].x = 50;
+     c[0].y = height/2;
+     c[0].vx = 0;
+     c[0].vy = 0;
+     c[0].r = c[0].x;
+     
     for (int i=0; i<QUANTITY; i++) {
         if (RADIUS_MAX - RADIUS_MIN == 0) {
             c[i].r = RADIUS_MIN;
@@ -67,7 +78,9 @@
  * Calcuate the frame size for drawing the circle
  */
 - (CGRect)getObjectFrameForIndex: (int)i {
-    return CGRectMake(c[i].x - c[i].r, c[i].y - c[i].r, c[i].r*2, c[i].r*2);
+    double r = c[i].r;
+    double r2 = r*2;
+    return CGRectMake(c[i].x - r, c[i].y - r, r2, r2);
 }
 
 /*
@@ -76,6 +89,10 @@
 - (void)calculateNextPosition {
     [self calculateCollisions];
     [self moveCirclesToNextPosition];
+    if (++counter % BALL_ATTENUATION_SWITCH == 0) {
+        DLog(@"Ball Attenuation Switch!");
+        ball_attenuation = BALL_ATTENUATION2;
+    }
 }
 
 /*
@@ -84,20 +101,28 @@
 - (void)calculateCollisions {
     //DLog(@"calculateCollisions");
     
-    double dx,dy,dr;
+    double dx,dy,rsum;
     
     // Test for, and handle, circle collisions
     for (int i=0; i<QUANTITY; i++) {
-        for (int j=i+1; j<QUANTITY; j++) {
-            dr = (c[i].r + c[j].r)*(c[i].r + c[j].r);
-            dx = c[i].x - c[j].x;
-            dy = c[i].y - c[j].y;
-            if (dx * dx + dy * dy < dr) {
-                if (i!=lastCollision1 || j!=lastCollision2) {
-                    [self separateCircles: &(c[i]) with: &(c[j])];
-                    [self adjustUIViewVelocityForCollision: &(c[i]) with: &(c[j])];
-                    lastCollision1 = i;
-                    lastCollision2 = j;
+        if (i != lastCollision1) {
+            for (int j=i+1; j<QUANTITY; j++) {
+                if (j != lastCollision2) {
+                    dx = c[i].x - c[j].x;
+                    if (dx > RADIUS_BOUNDS) {
+                        continue;
+                    }
+                    dy = c[i].y - c[j].y;
+                    if (dy > RADIUS_BOUNDS) {
+                        continue;
+                    }
+                    rsum = c[i].r + c[j].r;
+                    if (dx * dx + dy * dy < rsum * rsum) {
+                        [self separateCircles: &(c[i]) with: &(c[j])];
+                        [self adjustUIViewVelocityForCollision: &(c[i]) with: &(c[j])];
+                        lastCollision1 = i;
+                        lastCollision2 = j;
+                    }
                 }
             }
         }
@@ -151,15 +176,18 @@
     //double midpointx = (a->x + b->x) / 2.0;
     //double midpointy = (a->y + b->y) / 2.0;
     
-    double midpointx = (a->x * b->r + b->x * a->r) / (a->r + b->r);
-    double midpointy = (a->y * b->r + b->y * a->r) / (a->r + b->r);
+    double ra = a->r + 0.01;
+    double rb = b->r + 0.01;
+    
+    double midpointx = (a->x * rb + b->x * ra) / (ra + rb);
+    double midpointy = (a->y * rb + b->y * ra) / (ra + rb);
     
     double d = sqrt((a->x - b->x) * (a->x - b->x) + (a->y - b->y) * (a->y - b->y));
     
-    double ax = midpointx + a->r * (a->x - b->x) / d;
-    double ay = midpointy + a->r * (a->y - b->y) / d;
-    double bx = midpointx + b->r * (b->x - a->x) / d;
-    double by = midpointy + b->r * (b->y - a->y) / d;
+    double ax = midpointx + ra * (a->x - b->x) / d;
+    double ay = midpointy + ra * (a->y - b->y) / d;
+    double bx = midpointx + rb * (b->x - a->x) / d;
+    double by = midpointy + rb * (b->y - a->y) / d;
     
     a->x = ax;
     a->y = ay;
@@ -187,10 +215,10 @@
     double new_bVx = b->vx + p * mb * nx;
     double new_bVy = b->vy + p * mb * ny;
     
-    a->vx = new_aVx * ATTENUATION;
-    a->vy = new_aVy * ATTENUATION;
-    b->vx = new_bVx * ATTENUATION;
-    b->vy = new_bVy * ATTENUATION;    
+    a->vx = new_aVx * ball_attenuation;
+    a->vy = new_aVy * ball_attenuation;
+    b->vx = new_bVx * ball_attenuation;
+    b->vy = new_bVy * ball_attenuation;
 }
 
 /*
@@ -202,28 +230,28 @@
     // You have to check all four walls, because if a ball is in a corner and you return after checking
     // just one wall, the ball will act erratically
     BOOL ret = NO;
-    
+/*
     if (a->x < a->r) {
         a->x = a->r;
-        a->vx = abs(a->vx);
+        a->vx = abs(a->vx) * WALL_ATTENUATION;
         ret = YES;
     }
-    
+*/
     if (a->x > width - a->r) {
         a->x = width - a->r;
-        a->vx = -abs(a->vx);
+        a->vx = -abs(a->vx) * WALL_ATTENUATION;
         ret = YES;
     }
-    
+
     if (a->y < a->r) {
         a->y = a->r;
-        a->vy = abs(a->vy);
+        a->vy = abs(a->vy) *WALL_ATTENUATION;
         ret = YES;
     }
-    
+ 
     if (a->y > height - a->r) {
         a->y = height - a->r;
-        a->vy = -abs(a->vy);
+        a->vy = -abs(a->vy) * WALL_ATTENUATION;
         ret = YES;
     }
     
