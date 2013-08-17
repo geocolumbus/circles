@@ -13,7 +13,6 @@
 
 typedef struct {
     double x,y;
-    int hashX,hashY;
     double vx,vy;
     double r;
 } circType;
