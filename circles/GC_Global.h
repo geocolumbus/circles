@@ -18,8 +18,8 @@
 #define ILog(s, ...) NSLog(@ "<%p %@:(%d)>\n%@\n\n", self, [[NSString stringWithUTF8String: __FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat: (s), ## __VA_ARGS__])
 
 
-#define QUANTITY 500
-#define TIME_INCREMENT .00001
+#define QUANTITY 10
+#define TIME_INCREMENT .000001
 #define VELOCITY 0
 #define RADIUS_MAX 8
 #define RADIUS_MIN 4

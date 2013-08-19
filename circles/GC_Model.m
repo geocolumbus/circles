@@ -8,23 +8,24 @@
 
 #import "GC_Model.h"
 #import "GC_Global.h"
+#import "GC_Circle.h"
 
 @implementation GC_Model {
     long width, height;
-    circType c[QUANTITY];
-    int lastCollision1, lastCollision2;
+    GC_Circle *lastCollision1, *lastCollision2;
     long counter;
 }
 
 /*
  *
  */
-- (GC_Model *)initWithWidth:(long)viewWidth andHeight:(long)viewHeight {
-    DLog(@"initializeUIViewDataArray");
+- (GC_Model *)initWithWidth:(long)viewWidth andHeight:(long)viewHeight andView: (UIView*)view {
+    DLog(@"initWithWidth: %ld andHeight: %ld",viewWidth,viewHeight);
     
     width = viewWidth;
     height = viewHeight;
     counter = 0;
+    GC_Circle *circle;
     
     self.manager = [[CMMotionManager alloc] init];
     self.manager.deviceMotionUpdateInterval = 0.05; // 20 Hz
@@ -34,73 +35,77 @@
     
     // Randomly create circles
     
-    c[0].x = 50;
-    c[0].y = height / 2;
-    c[0].vx = 0;
-    c[0].vy = 0;
-    c[0].r = c[0].x;
+    self.root = [GC_Circle new];
+    
+    circle = _root;
     
     for (int i = 0; i < QUANTITY; i++) {
         if (RADIUS_MAX - RADIUS_MIN == 0) {
-            c[i].r = RADIUS_MIN;
+            circle.r = RADIUS_MIN;
         } else {
-            c[i].r = rand() % (RADIUS_MAX - RADIUS_MIN) + RADIUS_MIN;
+            circle.r = rand() % (RADIUS_MAX - RADIUS_MIN) + RADIUS_MIN;
         }
         
-        c[i].x = 600-rand() % (8 * width - (int)c[i].r) + c[i].r;
-        c[i].y = rand() % (height - (int)c[i].r) + c[i].r;
-        c[i].vx = ((rand() % 1000) / 1000.0 - .5) * VELOCITY / TIME_INCREMENT;
-        c[i].vy = ((rand() % 1000) / 1000.0 - .5) * VELOCITY / TIME_INCREMENT;
+        circle.x = rand() % (width - (int)circle.r) + circle.r;
+        circle.y = rand() % (height - (int)circle.r) + circle.r;
+        circle.vx = ((rand() % 1000) / 1000.0 - .5) * VELOCITY / TIME_INCREMENT;
+        circle.vy = ((rand() % 1000) / 1000.0 - .5) * VELOCITY / TIME_INCREMENT;
         
         // Reject any circle that overlaps an already existing circle
-        for (int j = 0; j < i; j++) {
-            dr = (c[i].r + c[j].r) * (c[i].r + c[j].r);
-            dx = c[i].x - c[j].x;
-            dy = c[i].y - c[j].y;
+        BOOL reject = NO;
+        
+        GC_Circle *item = circle.next;
+        while (item) {
+            dr = (circle.r + item.r) * (circle.r + item.r);
+            dx = circle.x - item.x;
+            dy = circle.y - item.y;
             
             if (dx * dx + dy * dy < dr) {
-                i -= 1;
+                reject = YES;
                 break;
             }
+            item = item.next;
         }
+        
+        if (reject) {
+            i -= 1;
+        } else {
+            [circle setFrame:CGRectMake(circle.x - circle.r, circle.y - circle.r, circle.r*2, circle.r*2)];
+            [view addSubview:circle];
+            circle.next = [GC_Circle new];
+            circle.next.prev = circle;
+            circle = circle.next;
+        }
+        
     }
     
     // Once a two circles collide, ignore future collisions until one of them hits another ball
     // or the wall. Otherwise the balls will stick together and vibrate.
     
-    lastCollision1 = -1; // Stores the first ball in the most recent collisiom. Initialize to -1 => no collision
-    lastCollision2 = -1; //       "    second                            "
+    lastCollision1 = nil; // Stores the first ball in the most recent collisiom. Initialize to -1 => no collision
+    lastCollision2 = nil; //       "    second                            "
     
     return self;
 }
 
 /*
- * Calcuate the frame size for drawing the circle
+ * Draw the circles
  */
-
-- (void)setObjectFrameFor: (UIView *)view withIndex: (int)i {
-    circType *a = &(c[i]);
-    double r = a->r;
-    double r2 = r * 2;
-    CGRect rect =  CGRectMake(a->x - r, a->y - r, r2, r2);
-    [view setFrame:rect];
+-(void) draw {
+    //DLog(@"draw");
+    GC_Circle *circle = _root;
+    while (circle) {
+        CGRect rect =  CGRectMake(circle.x - circle.r, circle.y - circle.r, circle.r*2, circle.r*2);
+        [circle setFrame:rect];
+        circle = circle.next;
+    }
 }
-
-/*
- * Calcuate the frame size for drawing the circle
- */
-- (CGRect)getObjectFrameForIndex:(int)i {
-    circType *a = &c[i];
-    double r = a->r;
-    double r2 = r * 2;
-    return CGRectMake(a->x - r, a->y - r, r2, r2);
-}
-
 
 /*
  * Calculate the next position of all circles. Circle and wall collisions are handled too.
  */
 - (void)calculateNextPosition {
+    //DLog(@"calculateNextPosition");
     [self calculateCollisions];
     [self moveCirclesToNextPosition];
 }
@@ -112,47 +117,56 @@
     //DLog(@"calculateCollisions");
     
     double dx, dy, rsum;
+    GC_Circle *circle1, *circle2;
     
     // Test for, and handle, circle collisions
-    for (int i = 0; i < QUANTITY; i++) {
-        if (i != lastCollision1) {
-            for (int j = i + 1; j < QUANTITY; j++) {
-                if (j != lastCollision2) {
-                    dx = c[i].x - c[j].x;
+    
+    circle1 = _root;
+    while (circle1) {
+        //DLog(@"circle1 = %@",circle1.description);
+        if (circle1 != lastCollision1) {
+            circle2 = circle1.next;
+            //DLog(@"before while (circle2)");
+            while (circle2) {
+                //DLog(@"\n\ncircle2 = %@\ncircle2.next = %@\ncircle2.next.next = %@\n",circle2.description,circle2.next.description,circle2.next.next.description);
+                
+                if (circle2 != lastCollision2) {
+                    dx = circle1.x - circle2.x;
+                    dy = circle1.y - circle2.y;
                     
-                    if (dx > RADIUS_BOUNDS) {
-                        continue;
-                    }
-                    
-                    dy = c[i].y - c[j].y;
-                    
-                    if (dy > RADIUS_BOUNDS) {
-                        continue;
-                    }
-                    
-                    rsum = c[i].r + c[j].r;
-                    
-                    if (dx * dx + dy * dy < rsum * rsum) {
-                        [self collisionPositionAndVelocity:i with:j];
-                        lastCollision1 = i;
-                        lastCollision2 = j;
+                    if (dx < RADIUS_BOUNDS && dy < RADIUS_BOUNDS) {                        
+                        if (dy > RADIUS_BOUNDS) {
+                            continue;
+                        }
+                        
+                        rsum = circle1.r + circle2.r;
+
+                        if (dx * dx + dy * dy < rsum * rsum) {
+                            [self collisionPositionAndVelocity:circle1 with:circle2];
+                            lastCollision1 = circle1;
+                            lastCollision2 = circle2;
+                        }
                     }
                 }
+                circle2 = circle2.next;
             }
         }
+        circle1 = circle1.next;
     }
     
     // Test for, and handle, wall collisions
-    for (int i = 0; i < QUANTITY; i++) {
-        if ([self adjustUIViewVelocityForWallCollision:i]) {
-            if (lastCollision1 == i) {
-                lastCollision1 = -1;
+    circle1 = _root;
+    while (circle1) {
+        if ([self adjustUIViewVelocityForWallCollision:circle1]) {
+            if (lastCollision1 == circle1) {
+                lastCollision1 = nil;
             }
             
-            if (lastCollision2 == i) {
-                lastCollision2 = -1;
+            if (lastCollision2 == circle1) {
+                lastCollision2 = nil;
             }
         }
+        circle1 = circle1.next;
     }
 }
 
@@ -163,6 +177,7 @@
 - (void)moveCirclesToNextPosition {
     //DLog(@"moveCirclesToNextPosition");
     
+    GC_Circle *circle;
     double pitch = self.manager.deviceMotion.attitude.pitch;
     double roll = self.manager.deviceMotion.attitude.roll;
     
@@ -176,87 +191,85 @@
     // Calculate the accelleration due to tilt in the Y direction
     double ay = sin(pitch) * GRAVITY;
     
-    for (int i = 0; i < QUANTITY; i++) {
-        c[i].vx -= ax;
-        c[i].vy -= ay;
-        c[i].x = c[i].x + c[i].vx * TIME_INCREMENT;
-        c[i].y = c[i].y + c[i].vy * TIME_INCREMENT;
-
+    circle = _root;
+    while (circle) {
+        circle.vx -= ax;
+        circle.vy -= ay;
+        circle.x = circle.x + circle.vx * TIME_INCREMENT;
+        circle.y = circle.y + circle.vy * TIME_INCREMENT;
+        circle = circle.next;
     }
 }
 
 /*
  * When two circles collide, calculate the new velocity values
  */
-- (void)collisionPositionAndVelocity:(int)i with:(int)j {
-    circType *a = &(c[i]);
-    circType *b = &(c[j]);
+- (void)collisionPositionAndVelocity:(GC_Circle *)c1 with:(GC_Circle *)c2 {
+    //DLog(@"collisionPositionAndVelocity:");
     
     // Circle Collision
-    double mb = a->r * a->r;
-    double ma = b->r * b->r;
+    double mb = c1.r * c1.r;
+    double ma = c2.r * c2.r;
     
-    double d = sqrt((a->x - b->x) * (a->x - b->x) + (a->y - b->y) * (a->y - b->y));
+    double d = sqrt((c1.x - c2.x) * (c1.x - c2.x) + (c1.y - c2.y) * (c1.y - c2.y));
     
     if (d < 0.01) {
         d = 0.01;
     }
     
-    double nx = (b->x - a->x) / d;
-    double ny = (b->y - a->y) / d;
-    double p = 2 * (a->vx * nx + a->vy * ny - b->vx * nx - b->vy * ny) / (ma + mb);
+    double nx = (c2.x - c1.x) / d;
+    double ny = (c2.y - c1.y) / d;
+    double p = 2 * (c1.vx * nx + c1.vy * ny - c2.vx * nx - c2.vy * ny) / (ma + mb);
     
-    a->vx = (a->vx - p * ma * nx) * BALL_ATTENUATION;
-    a->vy = (a->vy - p * ma * ny) * BALL_ATTENUATION;
-    b->vx = (b->vx + p * mb * nx) * BALL_ATTENUATION;
-    b->vy = (b->vy + p * mb * ny) * BALL_ATTENUATION;
-
+    c1.vx = (c1.vx - p * ma * nx) * BALL_ATTENUATION;
+    c1.vy = (c1.vy - p * ma * ny) * BALL_ATTENUATION;
+    c2.vx = (c2.vx + p * mb * nx) * BALL_ATTENUATION;
+    c2.vy = (c2.vy + p * mb * ny) * BALL_ATTENUATION;
+    
     // Separate Circles
     
-    double ra = a->r + 0.01;
-    double rb = b->r + 0.01;
+    double ra = c1.r + 0.01;
+    double rb = c2.r + 0.01;
     
-    double midpointx = (a->x * rb + b->x * ra) / (ra + rb);
-    double midpointy = (a->y * rb + b->y * ra) / (ra + rb);
+    double midpointx = (c1.x * rb + c2.x * ra) / (ra + rb);
+    double midpointy = (c1.y * rb + c2.y * ra) / (ra + rb);
     
-    a->x = midpointx + ra * (a->x - b->x) / d;
-    a->y = midpointy + ra * (a->y - b->y) / d;
-    b->x = midpointx + rb * nx;
-    b->y = midpointy + rb * ny;
+    c1.x = midpointx + ra * (c1.x - c2.x) / d;
+    c1.y = midpointy + ra * (c1.y - c2.y) / d;
+    c2.x = midpointx + rb * nx;
+    c2.y = midpointy + rb * ny;
 }
 
 /*
  * When a circle hits a wall, calculate the new velocity values
  */
-- (BOOL)adjustUIViewVelocityForWallCollision:(int)i {
+- (BOOL)adjustUIViewVelocityForWallCollision:(GC_Circle *)c {
     //Dlog(@"adjustUIViewVelocityForWallCollision:");
-    
-    circType *a = &(c[i]);
     
     // You have to check all four walls, because if a ball is in a corner and you return after checking
     // just one wall, the ball will act erratically
     BOOL ret = NO;
     /*
-    if (a->x < a->r) {
-        a->x = a->r;
-        a->vx = abs(a->vx) * WALL_ATTENUATION;
+     if (c.x < c.r) {
+     c.x = c.r;
+     c.vx = abs(c.vx) * WALL_ATTENUATION;
+     ret = YES;
+     }
+     */
+    if (c.x > width - c.r) {
+        c.x = width - c.r;
+        c.vx = -abs(c.vx) * WALL_ATTENUATION;
         ret = YES;
     }
-    */
-    if (a->x > width - a->r) {
-        a->x = width - a->r;
-        a->vx = -abs(a->vx) * WALL_ATTENUATION;        
-        ret = YES;
-    }
-    if (a->y < a->r) {
-        a->y = a->r;
-        a->vy = abs(a->vy) * WALL_ATTENUATION;
+    if (c.y < c.r) {
+        c.y = c.r;
+        c.vy = abs(c.vy) * WALL_ATTENUATION;
         ret = YES;
     }
     
-    if (a->y > height - a->r) {
-        a->y = height - a->r;
-        a->vy = -abs(a->vy) * WALL_ATTENUATION;
+    if (c.y > height - c.r) {
+        c.y = height - c.r;
+        c.vy = -abs(c.vy) * WALL_ATTENUATION;
         ret = YES;
     }
     

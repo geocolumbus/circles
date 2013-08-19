@@ -10,4 +10,11 @@
 
 @interface GC_Circle : UIView
 
+@property (assign,atomic) double x, y;
+@property (assign,atomic) double vx, vy;
+@property (assign,atomic) double r;
+
+@property (retain,atomic) GC_Circle *next;
+@property (retain,atomic) GC_Circle *prev;
+
 @end

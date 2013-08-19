@@ -9,19 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>
 
+@class GC_Circle;
+
 @interface GC_Model : NSObject <UIAccelerometerDelegate>
 
-  typedef struct {
-  double x, y;
-  double vx, vy;
-  double r;
-} circType;
-
 @property (strong, nonatomic) CMMotionManager *manager;
+@property (retain, nonatomic) GC_Circle *root;
 
-- (GC_Model*)initWithWidth: (long)width andHeight: (long)height;
-- (CGRect)getObjectFrameForIndex: (int)i;
-- (void)setObjectFrameFor: (UIView *)view withIndex: (int)i;
+- (GC_Model*)initWithWidth: (long)width andHeight: (long)height andView: (UIView *)view;
 - (void)calculateNextPosition;
-
+- (void)draw;
 @end

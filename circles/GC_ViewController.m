@@ -12,7 +12,7 @@
 #import "GC_Global.h"
 
 @implementation GC_ViewController {
-    NSMutableArray *circles;
+//    NSMutableArray *circles;
     NSTimer *timer;
 }
 
@@ -25,9 +25,7 @@
     DLog(@"viewDidLoad");
     [super viewDidLoad];
 
-    self.model = [[GC_Model alloc]initWithWidth:self.view.frame.size.width andHeight:self.view.frame.size.height];
-    [self initializeUIViewArray];
-
+    self.model = [[GC_Model alloc]initWithWidth:self.view.frame.size.width andHeight:self.view.frame.size.height andView: self.view];
     [self start];
 }
 
@@ -37,22 +35,6 @@
 - (void)didReceiveMemoryWarning {
     DLog(@"didReceiveMemoryWarning");
     [super didReceiveMemoryWarning];
-}
-
-#pragma mark - Initialize Objects
-
-/*
- *
- */
-- (void)initializeUIViewArray {
-    DLog(@"initializeUIViewArray");
-
-    circles = [NSMutableArray new];
-
-    for (int i = 0; i < QUANTITY; i++) {
-        circles[i] = [[GC_Circle alloc] initWithFrame:[_model getObjectFrameForIndex:i]];
-        [self.view addSubview:circles[i]];
-    }
 }
 
 #pragma mark - Master Run Loop
@@ -78,11 +60,9 @@
  *
  */
 - (void)masterRunLoop {
+    //DLog(@"masterRunLoop");
     [_model calculateNextPosition];
-
-    for (int i = 0; i < QUANTITY; i++) {
-        [_model setObjectFrameFor: circles[i] withIndex: i];
-    }
+    [_model draw];
     
     timer = [NSTimer scheduledTimerWithTimeInterval:TIMER_INTERVAL target:self selector:@selector(masterRunLoop) userInfo:nil repeats:NO];
 }
