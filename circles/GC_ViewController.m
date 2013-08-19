@@ -11,10 +11,6 @@
 #import "GC_Circle.h"
 #import "GC_Global.h"
 
-@interface GC_ViewController ()
-
-@end
-
 @implementation GC_ViewController {
     NSMutableArray *circles;
     NSTimer *timer;
@@ -25,55 +21,70 @@
 /*
  *
  */
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     DLog(@"viewDidLoad");
     [super viewDidLoad];
-    
-    circles = [NSMutableArray new];
+
     self.model = [[GC_Model alloc]initWithWidth:self.view.frame.size.width andHeight:self.view.frame.size.height];
     [self initializeUIViewArray];
-    double timerDelay = 1.0 / CALCULATIONS_PER_SECOND;
-    timer = [NSTimer scheduledTimerWithTimeInterval:timerDelay target:self selector:@selector(executeNextMove) userInfo:nil repeats:YES];
+
+    [self start];
 }
 
 /*
  *
  */
-- (void)didReceiveMemoryWarning
-{
+- (void)didReceiveMemoryWarning {
     DLog(@"didReceiveMemoryWarning");
     [super didReceiveMemoryWarning];
 }
 
 #pragma mark - Initialize Objects
- 
+
 /*
  *
  */
-- (void)initializeUIViewArray
-{
+- (void)initializeUIViewArray {
     DLog(@"initializeUIViewArray");
-    for (int i=0; i<QUANTITY; i++) {
-        [circles addObject:[[GC_Circle alloc] initWithFrame:[_model getObjectFrameForIndex:i]]];
-        [circles[i] setBackgroundColor:[UIColor clearColor]];
+
+    circles = [NSMutableArray new];
+
+    for (int i = 0; i < QUANTITY; i++) {
+        circles[i] = [[GC_Circle alloc] initWithFrame:[_model getObjectFrameForIndex:i]];
         [self.view addSubview:circles[i]];
     }
 }
 
-#pragma mark - Move UIViews to next position
+#pragma mark - Master Run Loop
 
 /*
  *
  */
-- (void)executeNextMove {
-    
-    [_model calculateNextPosition];
-    
-    for (int i=0; i<QUANTITY; i++) {
-        [circles[i] setFrame:[_model getObjectFrameForIndex:i]];
-        [circles[i] setNeedsDisplay];
+-(void)start {
+    timer = [NSTimer scheduledTimerWithTimeInterval:TIMER_INTERVAL target:self selector:@selector(masterRunLoop) userInfo:nil repeats:NO];
+}
+
+/*
+ *
+ */
+-(void)stop {
+    if (timer != nil) {
+        [timer invalidate];
+        timer = nil;
     }
+}
+
+/*
+ *
+ */
+- (void)masterRunLoop {
+    [_model calculateNextPosition];
+
+    for (int i = 0; i < QUANTITY; i++) {
+        [_model setObjectFrameFor: circles[i] withIndex: i];
+    }
+    
+    timer = [NSTimer scheduledTimerWithTimeInterval:TIMER_INTERVAL target:self selector:@selector(masterRunLoop) userInfo:nil repeats:NO];
 }
 
 @end

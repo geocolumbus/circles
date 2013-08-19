@@ -8,16 +8,18 @@
 
 #import "GC_Circle.h"
 
-@implementation GC_Circle
+@implementation GC_Circle {
+}
 
 /*
  *
  */
-- (id)initWithFrame:(CGRect)frame
-{
+- (id)initWithFrame:(CGRect)frame {
+    
     self = [super initWithFrame:frame];
+    
     if (self) {
-        // Initialization code
+        [self setBackgroundColor:[UIColor clearColor]];
     }
     return self;
 }
@@ -25,11 +27,11 @@
 /*
  *
  */
-- (void)drawRect:(CGRect)rect
-{
+- (void)drawRect:(CGRect)rect {
+    
     CGContextRef ctx = UIGraphicsGetCurrentContext();
-    CGContextAddEllipseInRect(ctx, rect);
     CGContextSetFillColor(ctx, CGColorGetComponents([[UIColor blueColor] CGColor]));
+    CGContextAddEllipseInRect(ctx, rect);
     CGContextFillPath(ctx);
 }
 

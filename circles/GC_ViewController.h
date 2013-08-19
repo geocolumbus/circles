@@ -12,7 +12,7 @@
 
 @interface GC_ViewController : UIViewController /*<UIAccelerometerDelegate>*/
 
-@property (weak,atomic) NSTimer *repeatingTimer;
-@property (strong,atomic) GC_Model *model;
+@property (weak, atomic) NSTimer *repeatingTimer;
+@property (strong, atomic) GC_Model *model;
 
 @end

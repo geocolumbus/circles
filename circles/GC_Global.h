@@ -9,29 +9,25 @@
 #import <Foundation/Foundation.h>
 
 #ifdef DEBUG
-#define DLog( s, ... ) NSLog( @" %@ %d  %@", [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat:(s), ##__VA_ARGS__] )
+#define DLog(s, ...) NSLog(@ " %@ %d  %@", [[NSString stringWithUTF8String: __FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat: (s), ## __VA_ARGS__])
 #else
-#define DLog( s, ... )
+#define DLog(s, ...)
 #endif
 
-#define ELog( s, ... ) NSLog( @"<%p %@:(%d)> %@", self, [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat:(s), ##__VA_ARGS__] )
-#define ILog( s, ... ) NSLog( @"<%p %@:(%d)>\n%@\n\n", self, [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat:(s), ##__VA_ARGS__] )
+#define ELog(s, ...) NSLog(@ "<%p %@:(%d)> %@", self, [[NSString stringWithUTF8String: __FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat: (s), ## __VA_ARGS__])
+#define ILog(s, ...) NSLog(@ "<%p %@:(%d)>\n%@\n\n", self, [[NSString stringWithUTF8String: __FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat: (s), ## __VA_ARGS__])
 
 
-#define QUANTITY 200
-#define CALCULATIONS_PER_SECOND 48
-#define TIME_INCREMENT .0005
+#define QUANTITY 500
+#define TIME_INCREMENT .00001
 #define VELOCITY 0
-#define RADIUS_MAX 40
-#define RADIUS_MIN 15
-#define RADIUS_BOUNDS 110
+#define RADIUS_MAX 8
+#define RADIUS_MIN 4
+#define RADIUS_BOUNDS 64
 #define BALL_ATTENUATION 0.9
 #define WALL_ATTENUATION 0.9
-#define GRAVITY -20
-#define HASH_SIZE 200
-#define RADIUS_ATTENUATION 0.99
-#define VANISH_SIZE 3
-
+#define GRAVITY -40
+#define TIMER_INTERVAL 0.001
 
 @interface GC_Global : NSObject
 

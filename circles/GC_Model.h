@@ -11,16 +11,17 @@
 
 @interface GC_Model : NSObject <UIAccelerometerDelegate>
 
-typedef struct {
-    double x,y;
-    double vx,vy;
-    double r;
+  typedef struct {
+  double x, y;
+  double vx, vy;
+  double r;
 } circType;
 
-@property (strong,nonatomic) CMMotionManager *manager;
+@property (strong, nonatomic) CMMotionManager *manager;
 
-- (GC_Model *)initWithWidth: (long)width andHeight: (long)height;
+- (GC_Model*)initWithWidth: (long)width andHeight: (long)height;
 - (CGRect)getObjectFrameForIndex: (int)i;
+- (void)setObjectFrameFor: (UIView *)view withIndex: (int)i;
 - (void)calculateNextPosition;
 
 @end

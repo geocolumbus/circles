@@ -10,8 +10,7 @@
 
 #import "GC_AppDelegate.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     @autoreleasepool {
         return UIApplicationMain(argc, argv, nil, NSStringFromClass([GC_AppDelegate class]));
     }
