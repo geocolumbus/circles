@@ -116,40 +116,25 @@
 - (void)calculateCollisions {
     //DLog(@"calculateCollisions");
     
-    double dx, dy, rsum;
-    GC_Circle *circle1, *circle2;
-    
-    // Test for, and handle, circle collisions
-    
-    circle1 = _root;
+    GC_Circle *circle1 = _root;
     while (circle1) {
-        //DLog(@"circle1 = %@",circle1.description);
-        if (circle1 != lastCollision1) {
-            circle2 = circle1.next;
-            //DLog(@"before while (circle2)");
-            while (circle2) {
-                //DLog(@"\n\ncircle2 = %@\ncircle2.next = %@\ncircle2.next.next = %@\n",circle2.description,circle2.next.description,circle2.next.next.description);
+        GC_Circle *circle2 = circle1.next;
+        while (circle2) {
+            if (circle1 != lastCollision1 && circle2 != lastCollision2) {
+                double dx = circle1.x - circle2.x;
+                double dy = circle1.y - circle2.y;
                 
-                if (circle2 != lastCollision2) {
-                    dx = circle1.x - circle2.x;
-                    dy = circle1.y - circle2.y;
+                if (abs(dx) < RADIUS_BOUNDS && abs(dy) < RADIUS_BOUNDS) {
+                    double rsum = circle1.r + circle2.r;
                     
-                    if (dx < RADIUS_BOUNDS && dy < RADIUS_BOUNDS) {                        
-                        if (dy > RADIUS_BOUNDS) {
-                            continue;
-                        }
-                        
-                        rsum = circle1.r + circle2.r;
-
-                        if (dx * dx + dy * dy < rsum * rsum) {
-                            [self collisionPositionAndVelocity:circle1 with:circle2];
-                            lastCollision1 = circle1;
-                            lastCollision2 = circle2;
-                        }
+                    if (dx * dx + dy * dy < rsum * rsum) {
+                        [self collisionPositionAndVelocity:circle1 with:circle2];
+                        lastCollision1 = circle1;
+                        lastCollision2 = circle2;
                     }
                 }
-                circle2 = circle2.next;
             }
+            circle2 = circle2.next;
         }
         circle1 = circle1.next;
     }
@@ -213,10 +198,6 @@
     
     double d = sqrt((c1.x - c2.x) * (c1.x - c2.x) + (c1.y - c2.y) * (c1.y - c2.y));
     
-    if (d < 0.01) {
-        d = 0.01;
-    }
-    
     double nx = (c2.x - c1.x) / d;
     double ny = (c2.y - c1.y) / d;
     double p = 2 * (c1.vx * nx + c1.vy * ny - c2.vx * nx - c2.vy * ny) / (ma + mb);
@@ -228,8 +209,10 @@
     
     // Separate Circles
     
-    double ra = c1.r + 0.01;
-    double rb = c2.r + 0.01;
+    d = sqrt((c1.x - c2.x) * (c1.x - c2.x) + (c1.y - c2.y) * (c1.y - c2.y));
+    
+    double ra = c1.r;
+    double rb = c2.r;
     
     double midpointx = (c1.x * rb + c2.x * ra) / (ra + rb);
     double midpointy = (c1.y * rb + c2.y * ra) / (ra + rb);
@@ -249,13 +232,13 @@
     // You have to check all four walls, because if a ball is in a corner and you return after checking
     // just one wall, the ball will act erratically
     BOOL ret = NO;
-    /*
-     if (c.x < c.r) {
-     c.x = c.r;
-     c.vx = abs(c.vx) * WALL_ATTENUATION;
-     ret = YES;
-     }
-     */
+    
+    if (c.x < c.r) {
+        c.x = c.r;
+        c.vx = abs(c.vx) * WALL_ATTENUATION;
+        ret = YES;
+    }
+    
     if (c.x > width - c.r) {
         c.x = width - c.r;
         c.vx = -abs(c.vx) * WALL_ATTENUATION;

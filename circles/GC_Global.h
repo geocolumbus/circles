@@ -18,16 +18,16 @@
 #define ILog(s, ...) NSLog(@ "<%p %@:(%d)>\n%@\n\n", self, [[NSString stringWithUTF8String: __FILE__] lastPathComponent], __LINE__, [NSString stringWithFormat: (s), ## __VA_ARGS__])
 
 
-#define QUANTITY 10
-#define TIME_INCREMENT .000001
-#define VELOCITY 0
-#define RADIUS_MAX 8
+#define QUANTITY 30
+#define TIME_INCREMENT .00001
+#define VELOCITY 4
+#define RADIUS_MAX 16
 #define RADIUS_MIN 4
-#define RADIUS_BOUNDS 64
-#define BALL_ATTENUATION 0.9
-#define WALL_ATTENUATION 0.9
+#define RADIUS_BOUNDS 40
+#define BALL_ATTENUATION 0.98
+#define WALL_ATTENUATION 0.98
 #define GRAVITY -40
-#define TIMER_INTERVAL 0.001
+#define TIMER_INTERVAL 0.04
 
 @interface GC_Global : NSObject
 
