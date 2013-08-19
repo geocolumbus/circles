@@ -54,8 +54,8 @@
         // Reject any circle that overlaps an already existing circle
         BOOL reject = NO;
         
-        GC_Circle *item = circle.next;
-        while (item) {
+        GC_Circle *item = _root;
+        while (item && item != circle) {
             dr = (circle.r + item.r) * (circle.r + item.r);
             dx = circle.x - item.x;
             dy = circle.y - item.y;
@@ -93,6 +93,7 @@
  */
 -(void) draw {
     //DLog(@"draw");
+    int n = 0;
     GC_Circle *circle = _root;
     while (circle) {
         CGRect rect =  CGRectMake(circle.x - circle.r, circle.y - circle.r, circle.r*2, circle.r*2);
