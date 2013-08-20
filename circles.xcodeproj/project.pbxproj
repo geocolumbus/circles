@@ -174,10 +174,10 @@
 		E7B4CC1A17B7490000861E56 /* circles */ = {
 			isa = PBXGroup;
 			children = (
+				5F4E369517BBEDC00007DEB0 /* Global */,
 				E769ADD117BDA17300D2A55A /* Models */,
 				E74CE8DA17BC565700E6938D /* UIView Objects */,
 				5F4E369917BBEF0E0007DEB0 /* App Delegate */,
-				5F4E369517BBEDC00007DEB0 /* Global */,
 				5F4E369417BBEDAA0007DEB0 /* View Controllers */,
 				E7B4CC2C17B7490100861E56 /* MainStoryboard_iPhone.storyboard */,
 				E7B4CC2F17B7490100861E56 /* MainStoryboard_iPad.storyboard */,

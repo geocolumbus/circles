@@ -24,7 +24,6 @@
     
     width = viewWidth;
     height = viewHeight;
-    counter = 0;
     GC_Circle *circle;
     
     self.manager = [[CMMotionManager alloc] init];
@@ -93,10 +92,9 @@
  */
 -(void) draw {
     //DLog(@"draw");
-    int n = 0;
     GC_Circle *circle = _root;
     while (circle) {
-        CGRect rect =  CGRectMake(circle.x - circle.r, circle.y - circle.r, circle.r*2, circle.r*2);
+        CGRect rect = CGRectMake(circle.x - circle.r, circle.y - circle.r, circle.r*2, circle.r*2);
         [circle setFrame:rect];
         circle = circle.next;
     }
@@ -105,10 +103,47 @@
 /*
  * Calculate the next position of all circles. Circle and wall collisions are handled too.
  */
-- (void)calculateNextPosition {
+- (void)calculateNextPosition: (UIView *)view {
     //DLog(@"calculateNextPosition");
     [self calculateCollisions];
     [self moveCirclesToNextPosition];
+    
+    if (counter++ % ADD_NEW_SPHERE == 0) {
+        GC_Circle *circle = [GC_Circle new];
+        circle.x = width/2 + 80;
+        circle.y = height - 40;
+        circle.vy = -50000;
+        circle.vx = rand() % 80000 - 40000;
+        if (RADIUS_MAX - RADIUS_MIN == 0) {
+            circle.r = RADIUS_MIN;
+        } else {
+            circle.r = rand() % (RADIUS_MAX - RADIUS_MIN) + RADIUS_MIN;
+        }
+        [circle setFrame:CGRectMake(circle.x - circle.r, circle.y - circle.r, circle.r*2, circle.r*2)];
+        [view addSubview:circle];
+        
+        circle.next = _root;
+        self.root.prev = circle;
+        self.root = circle;
+        
+        circle = [GC_Circle new];
+        circle.x = width/2 - 80;
+        circle.y = height - 40;
+        circle.vy = -50000;
+        circle.vx = rand() % 80000 - 40000;
+        if (RADIUS_MAX - RADIUS_MIN == 0) {
+            circle.r = RADIUS_MIN;
+        } else {
+            circle.r = rand() % (RADIUS_MAX - RADIUS_MIN) + RADIUS_MIN;
+        }
+        [circle setFrame:CGRectMake(circle.x - circle.r, circle.y - circle.r, circle.r*2, circle.r*2)];
+        [view addSubview:circle];
+        
+        circle.next = _root;
+        self.root.prev = circle;
+        self.root = circle;
+
+    }
 }
 
 /*
@@ -143,6 +178,7 @@
     // Test for, and handle, wall collisions
     circle1 = _root;
     while (circle1) {
+        GC_Circle *next = circle1.next;
         if ([self adjustUIViewVelocityForWallCollision:circle1]) {
             if (lastCollision1 == circle1) {
                 lastCollision1 = nil;
@@ -152,7 +188,7 @@
                 lastCollision2 = nil;
             }
         }
-        circle1 = circle1.next;
+        circle1 = next;
     }
 }
 
@@ -183,8 +219,12 @@
         circle.vy -= ay;
         circle.x = circle.x + circle.vx * TIME_INCREMENT;
         circle.y = circle.y + circle.vy * TIME_INCREMENT;
+        circle.r *= 0.992;
+        if (circle.r < 2) {
+            [circle removeCircle];
+        }
         circle = circle.next;
-    }
+    }    
 }
 
 /*
@@ -199,6 +239,10 @@
     
     double d = sqrt((c1.x - c2.x) * (c1.x - c2.x) + (c1.y - c2.y) * (c1.y - c2.y));
     
+    if (d == 0) {
+        d = 0.0001;
+    }
+    
     double nx = (c2.x - c1.x) / d;
     double ny = (c2.y - c1.y) / d;
     double p = 2 * (c1.vx * nx + c1.vy * ny - c2.vx * nx - c2.vy * ny) / (ma + mb);
@@ -210,8 +254,12 @@
     
     // Separate Circles
     
-    d = sqrt((c1.x - c2.x) * (c1.x - c2.x) + (c1.y - c2.y) * (c1.y - c2.y));
-    
+    d = sqrt((c1.x - c2.x) * (c1.x - c2.x) + (c1.y - c2.y) * (c1.y - c2.y)) + 0.001;
+
+    if (d == 0) {
+        d = 0.0001;
+    }
+
     double ra = c1.r;
     double rb = c2.r;
     

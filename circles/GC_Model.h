@@ -17,6 +17,6 @@
 @property (retain, nonatomic) GC_Circle *root;
 
 - (GC_Model*)initWithWidth: (long)width andHeight: (long)height andView: (UIView *)view;
-- (void)calculateNextPosition;
+- (void)calculateNextPosition: (UIView *)view;
 - (void)draw;
 @end

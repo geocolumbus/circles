@@ -17,4 +17,6 @@
 @property (retain,atomic) GC_Circle *next;
 @property (retain,atomic) GC_Circle *prev;
 
+-(void)removeCircle;
+
 @end

@@ -61,7 +61,7 @@
  */
 - (void)masterRunLoop {
     //DLog(@"masterRunLoop");
-    [_model calculateNextPosition];
+    [_model calculateNextPosition: self.view];
     [_model draw];
     
     timer = [NSTimer scheduledTimerWithTimeInterval:TIMER_INTERVAL target:self selector:@selector(masterRunLoop) userInfo:nil repeats:NO];

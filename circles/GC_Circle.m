@@ -24,6 +24,14 @@
     return self;
 }
 
+- (void)removeCircle {
+    GC_Circle *a = self.prev;
+    GC_Circle *b = self.next;
+    a.next = b;
+    b.prev = a;
+    [self removeFromSuperview];
+}
+
 /*
  *
  */
