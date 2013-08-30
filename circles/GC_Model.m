@@ -49,6 +49,7 @@
         circle.y = rand() % (height - (int)circle.r) + circle.r;
         circle.vx = ((rand() % 1000) / 1000.0 - .5) * VELOCITY / TIME_INCREMENT;
         circle.vy = ((rand() % 1000) / 1000.0 - .5) * VELOCITY / TIME_INCREMENT;
+        circle.color = rand()%2 == 1 ? @"red":@"blue";
         
         // Reject any circle that overlaps an already existing circle
         BOOL reject = NO;
@@ -81,7 +82,7 @@
     // Once a two circles collide, ignore future collisions until one of them hits another ball
     // or the wall. Otherwise the balls will stick together and vibrate.
     
-    lastCollision1 = nil; // Stores the first ball in the most recent collisiom. Initialize to -1 => no collision
+    lastCollision1 = nil; // Stores the first ball in the most recent collision. Initialize to -1 => no collision
     lastCollision2 = nil; //       "    second                            "
     
     return self;
@@ -108,17 +109,19 @@
     [self calculateCollisions];
     [self moveCirclesToNextPosition];
     
-    if (counter++ % ADD_NEW_SPHERE == 0) {
+    if (counter % ADD_NEW_SPHERE == 0 && counter < MAX_NUMBER_OF_BALLS) {
+        counter += 2;
         GC_Circle *circle = [GC_Circle new];
         circle.x = width/2 + 80;
         circle.y = height - 40;
-        circle.vy = -50000;
-        circle.vx = rand() % 80000 - 40000;
+        circle.vy = -INITIAL_VELOCITY;
+        circle.vx = rand() % INITIAL_VELOCITY * 2 - INITIAL_VELOCITY;
         if (RADIUS_MAX - RADIUS_MIN == 0) {
             circle.r = RADIUS_MIN;
         } else {
             circle.r = rand() % (RADIUS_MAX - RADIUS_MIN) + RADIUS_MIN;
         }
+        circle.color = @"red";
         [circle setFrame:CGRectMake(circle.x - circle.r, circle.y - circle.r, circle.r*2, circle.r*2)];
         [view addSubview:circle];
         
@@ -129,20 +132,21 @@
         circle = [GC_Circle new];
         circle.x = width/2 - 80;
         circle.y = height - 40;
-        circle.vy = -50000;
-        circle.vx = rand() % 80000 - 40000;
+        circle.vy = -INITIAL_VELOCITY;
+        circle.vx = rand() % INITIAL_VELOCITY * 2 - INITIAL_VELOCITY;
         if (RADIUS_MAX - RADIUS_MIN == 0) {
             circle.r = RADIUS_MIN;
         } else {
             circle.r = rand() % (RADIUS_MAX - RADIUS_MIN) + RADIUS_MIN;
         }
+        circle.color = @"blue";
         [circle setFrame:CGRectMake(circle.x - circle.r, circle.y - circle.r, circle.r*2, circle.r*2)];
         [view addSubview:circle];
         
         circle.next = _root;
         self.root.prev = circle;
         self.root = circle;
-
+        
     }
 }
 
@@ -219,12 +223,13 @@
         circle.vy -= ay;
         circle.x = circle.x + circle.vx * TIME_INCREMENT;
         circle.y = circle.y + circle.vy * TIME_INCREMENT;
-        circle.r *= 0.992;
+        circle.r *= RADIUS_SHRINK_RATE;
         if (circle.r < 2) {
             [circle removeCircle];
+            counter--;
         }
         circle = circle.next;
-    }    
+    }
 }
 
 /*
@@ -255,11 +260,11 @@
     // Separate Circles
     
     d = sqrt((c1.x - c2.x) * (c1.x - c2.x) + (c1.y - c2.y) * (c1.y - c2.y)) + 0.001;
-
+    
     if (d == 0) {
         d = 0.0001;
     }
-
+    
     double ra = c1.r;
     double rb = c2.r;
     
