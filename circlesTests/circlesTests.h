@@ -6,8 +6,8 @@
 //  Copyright (c) 2013 george. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
-@interface circlesTests : SenTestCase
+@interface circlesTests : XCTestCase
 
 @end

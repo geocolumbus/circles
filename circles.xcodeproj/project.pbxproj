@@ -22,7 +22,6 @@
 		E7B4CC2E17B7490100861E56 /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7B4CC2C17B7490100861E56 /* MainStoryboard_iPhone.storyboard */; };
 		E7B4CC3117B7490100861E56 /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7B4CC2F17B7490100861E56 /* MainStoryboard_iPad.storyboard */; };
 		E7B4CC3417B7490100861E56 /* GC_ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E7B4CC3317B7490100861E56 /* GC_ViewController.m */; };
-		E7B4CC3C17B7490100861E56 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B4CC3B17B7490100861E56 /* SenTestingKit.framework */; };
 		E7B4CC3D17B7490100861E56 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B4CC1417B7490000861E56 /* UIKit.framework */; };
 		E7B4CC3E17B7490100861E56 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7B4CC1617B7490000861E56 /* Foundation.framework */; };
 		E7B4CC4617B7490100861E56 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E7B4CC4417B7490100861E56 /* InfoPlist.strings */; };
@@ -63,8 +62,7 @@
 		E7B4CC3017B7490100861E56 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
 		E7B4CC3217B7490100861E56 /* GC_ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GC_ViewController.h; sourceTree = "<group>"; };
 		E7B4CC3317B7490100861E56 /* GC_ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GC_ViewController.m; sourceTree = "<group>"; };
-		E7B4CC3A17B7490100861E56 /* circlesTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = circlesTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E7B4CC3B17B7490100861E56 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		E7B4CC3A17B7490100861E56 /* circlesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = circlesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B4CC4317B7490100861E56 /* circlesTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "circlesTests-Info.plist"; sourceTree = "<group>"; };
 		E7B4CC4517B7490100861E56 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E7B4CC4717B7490100861E56 /* circlesTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = circlesTests.h; sourceTree = "<group>"; };
@@ -87,7 +85,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E7B4CC3C17B7490100861E56 /* SenTestingKit.framework in Frameworks */,
 				E7B4CC3D17B7490100861E56 /* UIKit.framework in Frameworks */,
 				E7B4CC3E17B7490100861E56 /* Foundation.framework in Frameworks */,
 			);
@@ -155,7 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				E7B4CC1117B7490000861E56 /* circles.app */,
-				E7B4CC3A17B7490100861E56 /* circlesTests.octest */,
+				E7B4CC3A17B7490100861E56 /* circlesTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -166,7 +163,6 @@
 				E7B4CC1417B7490000861E56 /* UIKit.framework */,
 				E7B4CC1617B7490000861E56 /* Foundation.framework */,
 				E7B4CC1817B7490000861E56 /* CoreGraphics.framework */,
-				E7B4CC3B17B7490100861E56 /* SenTestingKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -255,8 +251,8 @@
 			);
 			name = circlesTests;
 			productName = circlesTests;
-			productReference = E7B4CC3A17B7490100861E56 /* circlesTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productReference = E7B4CC3A17B7490100861E56 /* circlesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -265,6 +261,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = GC_;
+				LastTestingUpgradeCheck = 0720;
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = george;
 			};
@@ -480,13 +477,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "circles/circles-Prefix.pch";
 				INFOPLIST_FILE = "circlesTests/circlesTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
 		};
@@ -497,13 +494,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "circles/circles-Prefix.pch";
 				INFOPLIST_FILE = "circlesTests/circlesTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
 		};
